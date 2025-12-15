@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
-import { generateAlerts } from '../../services/mockAdminData';
+
+import React, { useState, useEffect } from 'react';
+import { getAllAlerts, resolveAlert } from '../../services/mockAdminData';
 import { SystemAlert } from '../../types';
-import { AlertTriangle, CheckCircle, Clock, Filter, Search, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Inbox } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export const AlertsScreen = () => {
-  const [alerts, setAlerts] = useState<SystemAlert[]>(generateAlerts());
+  const [alerts, setAlerts] = useState<SystemAlert[]>([]);
   const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('all');
+
+  useEffect(() => {
+    setAlerts(getAllAlerts());
+  }, []);
 
   const filteredAlerts = alerts.filter(a => filter === 'all' || a.status === filter);
 
   const handleResolve = (id: string) => {
-    setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: 'resolved' } : a));
+    resolveAlert(id);
+    setAlerts(getAllAlerts()); // Refresh
   };
 
   const getSeverityColor = (severity: string) => {
@@ -58,8 +64,8 @@ export const AlertsScreen = () => {
       {/* Alerts Grid */}
       <div className="grid gap-4">
         {filteredAlerts.length === 0 ? (
-           <div className="text-center py-12 text-slate-400">
-             <CheckCircle className="mx-auto mb-2 w-12 h-12 text-slate-200" />
+           <div className="text-center py-12 text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
+             <Inbox className="mx-auto mb-2 w-12 h-12 text-slate-200" />
              <p>Nenhum alerta encontrado com este filtro.</p>
            </div>
         ) : (

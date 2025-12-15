@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { UserProfile, UserActivityLog, Subject } from '../../types';
-import { generateActivityLogs, CURRENT_ADMIN } from '../../services/mockAdminData';
+import { getUserActivityLogs, CURRENT_ADMIN } from '../../services/mockAdminData';
 import { AssessmentReportView } from '../AssessmentReportView';
-import { ArrowLeft, Clock, Award, TrendingUp, AlertCircle, ShieldCheck, Mail, Calendar, Activity, Lock, RefreshCw, Trash2, FileText, Printer } from 'lucide-react';
+import { ArrowLeft, Clock, Award, TrendingUp, AlertCircle, ShieldCheck, Mail, Calendar, Activity, Lock, RefreshCw, Trash2, FileText, Printer, Inbox } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface UserDetailProps {
@@ -12,7 +13,7 @@ interface UserDetailProps {
 
 export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
   const [showReport, setShowReport] = useState(false);
-  const activityLogs = generateActivityLogs(user.id || 'unknown');
+  const activityLogs = getUserActivityLogs(user.id || '');
   
   if (showReport && user.assessmentReport) {
     return (
@@ -70,7 +71,6 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                  </div>
                  
                  <div className="flex gap-2">
-                    {/* Admin Actions based on Role */}
                     <button className="px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 flex items-center gap-2">
                        <RefreshCw size={14} /> Resetar Senha
                     </button>
@@ -121,19 +121,21 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                   <div className="space-y-4 pl-2 border-l-2 border-slate-100 ml-1">
                      {todayLogs.length > 0 ? todayLogs.map(log => (
                         <ActivityItem key={log.id} log={log} time={formatDate(log.timestamp)} />
-                     )) : <p className="text-sm text-slate-400 italic pl-4">Nenhuma atividade registrada hoje.</p>}
+                     )) : <p className="text-sm text-slate-400 italic pl-4 flex items-center gap-2"><Inbox size={14}/> Nenhuma atividade registrada hoje.</p>}
                   </div>
                </div>
 
-               {/* Yesterday Section */}
-               <div>
-                  <h4 className="text-xs font-bold uppercase text-slate-400 mb-4 border-b border-slate-100 pb-2">Ontem</h4>
-                  <div className="space-y-4 pl-2 border-l-2 border-slate-100 ml-1">
-                     {yesterdayLogs.map(log => (
-                        <ActivityItem key={log.id} log={log} time={formatDate(log.timestamp)} />
-                     ))}
-                  </div>
-               </div>
+               {/* Yesterday Section (Will be empty in this session-only demo unless date mocked) */}
+               {yesterdayLogs.length > 0 && (
+                <div>
+                    <h4 className="text-xs font-bold uppercase text-slate-400 mb-4 border-b border-slate-100 pb-2">Anterior</h4>
+                    <div className="space-y-4 pl-2 border-l-2 border-slate-100 ml-1">
+                        {yesterdayLogs.map(log => (
+                            <ActivityItem key={log.id} log={log} time={formatDate(log.timestamp)} />
+                        ))}
+                    </div>
+                </div>
+               )}
             </div>
          </div>
 
@@ -146,17 +148,25 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                   <TrendingUp size={20} className="text-slate-400" /> Proficiência Estimada
                </h3>
                <div className="space-y-4">
-                  {[Subject.MATH, Subject.PORTUGUESE, Subject.GENERAL_KNOWLEDGE].map(sub => (
-                     <div key={sub}>
-                        <div className="flex justify-between text-xs mb-1">
-                           <span className="text-slate-600 font-medium">{sub}</span>
-                           <span className="text-slate-400">75%</span>
+                  {[Subject.MATH, Subject.PORTUGUESE, Subject.GENERAL_KNOWLEDGE].map(sub => {
+                     // Calculate dynamic mastery
+                     const topics = Object.entries(user.learningStats).filter(([k]) => k.startsWith(sub));
+                     const avg = topics.length > 0 
+                        ? Math.round(topics.reduce((acc, [, v]) => acc + v.masteryLevel, 0) / topics.length)
+                        : 0;
+
+                     return (
+                        <div key={sub}>
+                            <div className="flex justify-between text-xs mb-1">
+                            <span className="text-slate-600 font-medium">{sub}</span>
+                            <span className="text-slate-400">{avg}%</span>
+                            </div>
+                            <div className="w-full h-2 bg-slate-100 rounded-full">
+                            <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${avg}%` }}></div>
+                            </div>
                         </div>
-                        <div className="w-full h-2 bg-slate-100 rounded-full">
-                           <div className="h-full bg-indigo-500 rounded-full" style={{ width: '75%' }}></div>
-                        </div>
-                     </div>
-                  ))}
+                     );
+                  })}
                </div>
             </div>
 
@@ -180,20 +190,6 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                    </div>
                )}
             </div>
-
-            {/* Retention Risk Alert */}
-            <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
-               <div className="flex gap-3">
-                  <AlertCircle className="text-amber-600 shrink-0" />
-                  <div>
-                     <h4 className="font-bold text-amber-800 text-sm">Risco de Retenção: Baixo</h4>
-                     <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                        Usuário mantém frequência regular (3x/semana). Taxa de erro em Matemática aumentou levemente ontem.
-                     </p>
-                  </div>
-               </div>
-            </div>
-
          </div>
       </div>
     </div>
@@ -227,8 +223,11 @@ const ActivityItem = ({ log, time }: { log: UserActivityLog, time: string }) => 
                </p>
                {log.metadata.subject && (
                   <p className="text-xs text-slate-500">
-                     {log.metadata.subject} • {log.metadata.durationSeconds}s
+                     {log.metadata.subject} • {log.metadata.durationSeconds || 45}s
                   </p>
+               )}
+               {log.metadata.xpEarned && (
+                  <span className="text-[10px] bg-yellow-100 text-yellow-700 px-1 rounded ml-2">+{log.metadata.xpEarned} XP</span>
                )}
             </div>
             <span className="text-xs text-slate-400 font-mono">{time}</span>

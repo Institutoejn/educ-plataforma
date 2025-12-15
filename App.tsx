@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
@@ -15,7 +16,7 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AssessmentReportView } from './components/AssessmentReportView';
 import { CertificatesScreen, TasksScreen, NotificationsScreen, MessagesScreen } from './components/student/StudentFeatures';
 import { UserProfile, Subject, TopicMetrics, LiteracyLevel, NumeracyLevel, AssessmentReport } from './types';
-import { registerUserToAdmin, authenticateStudent } from './services/mockAdminData';
+import { registerUserToAdmin, authenticateStudent, logUserActivity, updateUserInStore } from './services/mockAdminData';
 
 // --- MAIN CONTENT WRAPPER (Inside Router) ---
 const AppContent = () => {
@@ -82,6 +83,7 @@ const AppContent = () => {
               badges: [...user.badges, 'badge_explorer']
           };
           setUser(updatedUser);
+          updateUserInStore(updatedUser); // Sync to admin
           navigate('/dashboard');
       }
   };
@@ -93,17 +95,47 @@ const AppContent = () => {
   };
 
   const handleActivityComplete = (xpEarned: number, updatedStats: Record<string, TopicMetrics>) => {
-    if (user) {
-      setUser(prev => prev ? ({
-        ...prev,
-        xp: prev.xp + xpEarned,
-        level: Math.floor((prev.xp + xpEarned) / 100) + 1,
+    if (user && currentSubject) {
+      const newLevel = Math.floor((user.xp + xpEarned) / 100) + 1;
+      const leveledUp = newLevel > user.level;
+
+      const updatedUser = {
+        ...user,
+        xp: user.xp + xpEarned,
+        level: newLevel,
         learningStats: updatedStats
-      }) : null);
+      };
+
+      setUser(updatedUser);
+      updateUserInStore(updatedUser); // Sync to admin
+
+      // LOGGING FOR ADMIN DASHBOARD
+      logUserActivity({
+          userId: user.id || 'unknown',
+          activityType: 'MISSION_COMPLETE',
+          metadata: {
+              subject: currentSubject,
+              result: 'success',
+              xpEarned: xpEarned
+          }
+      });
+
+      if (leveledUp) {
+          logUserActivity({
+            userId: user.id || 'unknown',
+            activityType: 'LEVEL_UP',
+            metadata: {
+                xpEarned: 0
+            }
+        });
+      }
     }
   };
 
-  const handleUpdateProfile = (updatedProfile: UserProfile) => setUser(updatedProfile);
+  const handleUpdateProfile = (updatedProfile: UserProfile) => {
+      setUser(updatedProfile);
+      updateUserInStore(updatedProfile);
+  };
 
   // Accessibility Toggles
   const toggleHighContrast = () => {

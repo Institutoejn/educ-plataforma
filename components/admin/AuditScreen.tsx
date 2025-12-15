@@ -1,9 +1,10 @@
+
 import React from 'react';
-import { generateAuditLogs } from '../../services/mockAdminData';
-import { Activity, Shield, User, Database, Eye } from 'lucide-react';
+import { getAllAuditLogs } from '../../services/mockAdminData';
+import { Activity, Shield, User, Database, Eye, Inbox } from 'lucide-react';
 
 export const AuditScreen = () => {
-  const logs = generateAuditLogs();
+  const logs = getAllAuditLogs();
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -26,50 +27,53 @@ export const AuditScreen = () => {
              <thead className="bg-slate-100 text-xs uppercase font-semibold text-slate-500">
                 <tr>
                    <th className="px-6 py-4">Data/Hora</th>
-                   <th className="px-6 py-4">Agente (Admin)</th>
+                   <th className="px-6 py-4">Agente</th>
                    <th className="px-6 py-4">Ação</th>
                    <th className="px-6 py-4">Recurso Afetado</th>
                    <th className="px-6 py-4">Detalhes</th>
                 </tr>
              </thead>
              <tbody className="divide-y divide-slate-100">
-                {logs.map((log) => (
-                   <tr key={log.id} className="hover:bg-slate-50 transition-colors font-mono text-xs">
-                      <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-                         {new Date(log.timestamp).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4">
-                         <div className="flex items-center gap-2">
-                            <User size={12} className="text-slate-400" />
-                            <span className="font-bold text-slate-700">{log.actorName}</span>
-                            <span className="text-slate-400">({log.actorId})</span>
-                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                         <span className={`px-2 py-1 rounded border ${
-                            log.action.includes('DELETE') ? 'bg-red-50 text-red-700 border-red-100' :
-                            log.action.includes('UPDATE') ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                            'bg-slate-100 text-slate-600 border-slate-200'
-                         }`}>
-                            {log.action}
-                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-500">
-                         {log.targetResource}
-                      </td>
-                      <td className="px-6 py-4 text-slate-500 max-w-xs truncate" title={log.details}>
-                         {log.details}
-                      </td>
-                   </tr>
-                ))}
-                {/* Mock Filler Rows for demo */}
-                <tr className="hover:bg-slate-50 transition-colors font-mono text-xs opacity-60">
-                   <td className="px-6 py-4 whitespace-nowrap">20/11/2023 10:45:22</td>
-                   <td className="px-6 py-4 flex items-center gap-2"><User size={12}/> SYSTEM</td>
-                   <td className="px-6 py-4"><span className="bg-slate-100 px-2 py-1 rounded">AUTO_BACKUP</span></td>
-                   <td className="px-6 py-4">db_users_daily</td>
-                   <td className="px-6 py-4">Backup rotineiro concluído com sucesso.</td>
-                </tr>
+                {logs.length === 0 ? (
+                    <tr>
+                        <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                            <div className="flex flex-col items-center gap-2">
+                                <Inbox size={24} />
+                                <p>Nenhum log de auditoria registrado nesta sessão.</p>
+                            </div>
+                        </td>
+                    </tr>
+                ) : (
+                    logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50 transition-colors font-mono text-xs">
+                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
+                            {new Date(log.timestamp).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                                <User size={12} className="text-slate-400" />
+                                <span className="font-bold text-slate-700">{log.actorName}</span>
+                                <span className="text-slate-400">({log.actorId})</span>
+                            </div>
+                        </td>
+                        <td className="px-6 py-4">
+                            <span className={`px-2 py-1 rounded border ${
+                                log.action.includes('DELETE') ? 'bg-red-50 text-red-700 border-red-100' :
+                                log.action.includes('CREATE') ? 'bg-green-50 text-green-700 border-green-100' :
+                                'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                                {log.action}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-500">
+                            {log.targetResource}
+                        </td>
+                        <td className="px-6 py-4 text-slate-500 max-w-xs truncate" title={log.details}>
+                            {log.details}
+                        </td>
+                    </tr>
+                    ))
+                )}
              </tbody>
           </table>
        </div>

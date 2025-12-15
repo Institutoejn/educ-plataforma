@@ -69,7 +69,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 pb-24">
+    <div className="container mx-auto px-4 py-4 sm:py-8 pb-24">
       {/* Header / HUD */}
       <div 
         className={`
@@ -85,13 +85,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <div className="flex items-center gap-4 z-10">
           <div className="relative">
-             <img src={user.avatar} alt="Avatar" className="w-16 h-16 rounded-full bg-gray-200 border-4 border-white shadow-sm" />
+             <img src={user.avatar} alt="Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 border-4 border-white shadow-sm" />
           </div>
           <div>
-            <h2 className={`text-xl font-bold ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
+            <h2 className={`text-lg sm:text-xl font-bold leading-tight ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
               {getWelcomeMessage()}
             </h2>
-            <p className={`text-sm ${user.ageGroup === '12-14' ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-xs sm:text-sm ${user.ageGroup === '12-14' ? 'text-gray-400' : 'text-gray-500'}`}>
               {getSubMessage()}
             </p>
           </div>
@@ -99,24 +99,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
         
         <div className="flex items-center gap-6 z-10">
           <div className="flex flex-col items-end">
-            <span className="text-xs uppercase font-bold text-gray-400">Energia (XP)</span>
-            <div className="flex items-center gap-1 text-yellow-500 font-bold text-xl">
-              <Star fill="currentColor" size={20} />
+            <span className="text-[10px] sm:text-xs uppercase font-bold text-gray-400">Energia (XP)</span>
+            <div className="flex items-center gap-1 text-yellow-500 font-bold text-lg sm:text-xl">
+              <Star fill="currentColor" size={16} />
               {user.xp}
             </div>
           </div>
         </div>
       </div>
 
-      {/* STUDENT NAVIGATION MENU */}
-      <div className="mb-8 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-        <div className="flex gap-4 min-w-max sm:min-w-0 sm:grid sm:grid-cols-6">
+      {/* STUDENT NAVIGATION MENU (Horizontal Scroll) */}
+      <div className="mb-8 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-3 sm:gap-4 w-max sm:w-auto sm:grid sm:grid-cols-6 pb-2">
            {menuItems.map((item, idx) => (
               <button
                  key={idx}
                  onClick={item.action}
                  className={`
-                    flex flex-col items-center justify-center p-3 rounded-xl gap-2 transition-transform hover:scale-105 active:scale-95 w-24 sm:w-auto shadow-sm border border-transparent hover:shadow-md
+                    flex flex-col items-center justify-center p-3 rounded-xl gap-2 transition-transform active:scale-95 w-24 sm:w-auto shadow-sm border border-transparent hover:shadow-md
                     ${user.ageGroup === '12-14' 
                         ? 'bg-slate-700 text-gray-200 hover:bg-slate-600' 
                         : 'bg-white text-gray-700 hover:border-gray-200'
@@ -126,7 +126,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                  <div className={`p-2 rounded-full ${user.ageGroup === '12-14' ? 'bg-slate-900' : item.color}`}>
                     {item.icon}
                  </div>
-                 <span className="text-xs font-bold text-center leading-tight">{item.label}</span>
+                 <span className="text-[10px] sm:text-xs font-bold text-center leading-tight">{item.label}</span>
               </button>
            ))}
         </div>
@@ -134,9 +134,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Plan of Study / Level Indicator */}
       {(user.literacyLevel || user.numeracyLevel) && (
-          <div className="mb-8 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mb-8 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-100 text-indigo-600 rounded-full">
+                  <div className="p-2 bg-indigo-100 text-indigo-600 rounded-full shrink-0">
                       <GraduationCap size={20} />
                   </div>
                   <div>
@@ -146,7 +146,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       </p>
                   </div>
               </div>
-              <Button onClick={(e) => { e.stopPropagation(); onOpenReport(); }} variant="secondary" className="!text-xs !py-2" ageGroup={user.ageGroup}>
+              <Button onClick={(e) => { e.stopPropagation(); onOpenReport(); }} variant="secondary" className="!text-xs !py-2 w-full sm:w-auto justify-center" ageGroup={user.ageGroup}>
                   <FileText size={16} className="mr-2" />
                   Ver Relatório & Plano
               </Button>
@@ -155,31 +155,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Main Grid */}
       <div className="mb-6">
-        <h3 className={`text-2xl font-bold mb-6 ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
+        <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
           {user.ageGroup === '6-8' ? 'Escolha um Caminho:' : 'Mapa de Missões'}
         </h3>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {subjects.map((sub) => (
             <button
               key={sub.id}
               onClick={() => onSelectSubject(sub.id)}
               className={`
                 relative overflow-hidden group transition-all duration-300
-                ${user.ageGroup === '6-8' ? 'rounded-3xl hover:scale-105 border-b-8 border-gray-200 active:border-b-0 active:translate-y-2' : 'rounded-xl hover:-translate-y-2'}
+                ${user.ageGroup === '6-8' ? 'rounded-3xl border-b-8 border-gray-200 active:border-b-0 active:translate-y-2' : 'rounded-xl'}
                 ${user.ageGroup === '12-14' ? 'bg-slate-800 border border-slate-700 hover:border-teen-accent hover:shadow-[0_0_20px_rgba(6,182,212,0.3)]' : 'bg-white shadow-lg'}
-                h-56 flex flex-col items-center justify-center p-4 text-center
+                h-48 sm:h-56 flex flex-col items-center justify-center p-4 text-center w-full hover:scale-[1.02] sm:hover:scale-105
               `}
             >
               <div className={`
-                w-20 h-20 rounded-full flex items-center justify-center mb-4 text-white
+                w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-4 text-white
                 ${sub.color} shadow-lg group-hover:scale-110 transition-transform duration-500
                 ${user.ageGroup === '12-14' ? 'ring-2 ring-white/20' : ''}
               `}>
-                {React.cloneElement(sub.icon as React.ReactElement<any>, { size: 36 })}
+                {React.cloneElement(sub.icon as React.ReactElement<any>, { size: 32 })}
               </div>
               
-              <span className={`text-lg font-bold leading-tight ${user.ageGroup === '12-14' ? 'text-gray-200 font-tech uppercase tracking-widest' : 'text-gray-800'}`}>
+              <span className={`text-base sm:text-lg font-bold leading-tight ${user.ageGroup === '12-14' ? 'text-gray-200 font-tech uppercase tracking-widest' : 'text-gray-800'}`}>
                 {sub.label}
               </span>
 

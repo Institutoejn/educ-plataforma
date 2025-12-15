@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, AlertTriangle, FileText, Settings, LogOut, Search, Bell, Shield, Activity, UserCog, Save, User, Phone, Lock, Camera, Trash2, Mail, Sliders, Layers, GraduationCap, ToggleLeft, ToggleRight } from 'lucide-react';
+import { LayoutDashboard, Users, AlertTriangle, FileText, Settings, LogOut, Search, Bell, Shield, Activity, UserCog, Save, User, Phone, Lock, Camera, Trash2, Mail, Sliders, Layers, GraduationCap, ToggleLeft, ToggleRight, Menu, X } from 'lucide-react';
 import { AdminDashboard } from './AdminDashboard';
 import { UserManagement } from './UserManagement';
 import { AlertsScreen } from './AlertsScreen';
@@ -29,6 +29,7 @@ const DEFAULT_AVATAR = "https://api.dicebear.com/7.x/initials/svg?seed=User";
 export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
   const [currentView, setCurrentView] = useState<AdminView>('OVERVIEW');
   const [currentUser, setCurrentUser] = useState<AdminUser>(CURRENT_ADMIN);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // --- PLATFORM CONFIG SUB-COMPONENT ---
   const PlatformConfigScreen = () => {
@@ -98,7 +99,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
             </div>
             
             <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
-               <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors">
+               <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors w-full sm:w-auto">
                   Salvar Parâmetros
                </button>
             </div>
@@ -133,12 +134,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
      };
 
      return (
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-8">
            <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
               <UserCog /> Editar Perfil Corporativo
            </h2>
            
-           <div className="flex flex-col md:flex-row gap-8">
+           <div className="flex flex-col lg:flex-row gap-8">
               
               {/* Left Column: Avatar Management */}
               <div className="flex flex-col items-center space-y-4">
@@ -174,15 +175,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
               </div>
 
               {/* Right Column: Form Fields */}
-              <div className="flex-1 space-y-5">
+              <div className="flex-1 space-y-5 w-full">
                  
                  {/* ID & Role (Read Only info) */}
-                 <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100 mb-2">
+                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100 mb-2">
                     <div className="text-xs text-slate-500">
                        <p className="font-bold uppercase">Função (Role)</p>
                        <span className="font-mono bg-indigo-100 text-indigo-700 px-1 rounded">{currentUser.role}</span>
                     </div>
-                    <div className="h-6 w-px bg-slate-200"></div>
+                    <div className="hidden sm:block h-6 w-px bg-slate-200"></div>
                     <div className="text-xs text-slate-500">
                        <p className="font-bold uppercase">ID do Sistema</p>
                        <span className="font-mono">{currentUser.id}</span>
@@ -248,7 +249,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                  <div className="pt-4 flex justify-end border-t border-slate-100 mt-6">
                     <button 
                        onClick={handleSave}
-                       className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors shadow-sm active:scale-95"
+                       className="w-full sm:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors shadow-sm active:scale-95"
                     >
                        <Save size={18} /> Salvar Alterações
                     </button>
@@ -285,7 +286,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
 
   const MenuLink = ({ view, icon: Icon, label }: { view: AdminView, icon: any, label: string }) => (
     <button
-      onClick={() => setCurrentView(view)}
+      onClick={() => {
+         setCurrentView(view);
+         setIsMobileMenuOpen(false); // Close menu on selection
+      }}
       className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
         ${currentView === view 
           ? 'bg-indigo-50 text-indigo-700' 
@@ -304,19 +308,39 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
   );
 
   return (
-    <div className="flex h-screen bg-slate-100 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full z-10">
-        <div className="p-6 border-b border-slate-100">
+    <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
+      
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+         <div 
+            className="fixed inset-0 bg-slate-900/50 z-20 md:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+         ></div>
+      )}
+
+      {/* Sidebar (Responsive) */}
+      <aside className={`
+         fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-slate-200 flex flex-col z-30 transition-transform duration-300 ease-in-out
+         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
           <div 
              onClick={onExit}
              className="flex items-center gap-2 text-indigo-700 cursor-pointer hover:opacity-80"
              title="Sair para Home"
           >
             <Shield size={24} />
-            <h1 className="font-bold text-lg tracking-tight">EDUC Console</h1>
+            <div className="leading-none">
+                <h1 className="font-bold text-lg tracking-tight">EDUC Console</h1>
+                <p className="text-[10px] text-slate-400 font-mono mt-0.5">Admin v1.3</p>
+            </div>
           </div>
-          <p className="text-xs text-slate-400 mt-1 ml-8">v1.3.0 • Admin</p>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden text-slate-400 hover:text-slate-700"
+          >
+             <X size={20} />
+          </button>
         </div>
 
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto custom-scrollbar">
@@ -326,7 +350,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
           
           <MenuHeader title="Gestão Acadêmica" />
           <MenuLink view="USERS" icon={Users} label="Usuários & Turmas" />
-          {/* Placeholder for future specific Groups view, grouped under 'Users' logic for now */}
           
           <MenuHeader title="Monitoramento & Risco" />
           <MenuLink view="ALERTS" icon={AlertTriangle} label="Alertas de Sistema" />
@@ -364,26 +387,35 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 flex flex-col h-full w-full bg-slate-100 overflow-hidden relative">
         {/* Top Header */}
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800">
-              {currentView === 'OVERVIEW' && 'Painel de Controle'}
-              {currentView === 'USERS' && 'Gestão de Usuários e Turmas'}
-              {currentView === 'ALERTS' && 'Monitoramento Operacional'}
-              {currentView === 'REPORTS' && 'Relatórios de Aprendizagem'}
-              {currentView === 'AUDIT' && 'Trilha de Auditoria'}
-              {currentView === 'SETTINGS' && 'Minha Conta Corporativa'}
-              {currentView === 'PLATFORM_CONFIG' && 'Configurações da Plataforma'}
-            </h2>
-            <p className="text-slate-500 text-sm mt-1">
-              Última atualização: {new Date().toLocaleTimeString()}
-            </p>
+        <header className="flex-none bg-slate-100 p-4 sm:p-8 flex justify-between items-center z-10">
+          <div className="flex items-center gap-3">
+            <button 
+               onClick={() => setIsMobileMenuOpen(true)}
+               className="md:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-200 rounded-lg"
+            >
+               <Menu size={24} />
+            </button>
+            
+            <div>
+               <h2 className="text-xl sm:text-2xl font-bold text-slate-800 truncate max-w-[200px] sm:max-w-none">
+               {currentView === 'OVERVIEW' && 'Painel de Controle'}
+               {currentView === 'USERS' && 'Gestão de Usuários'}
+               {currentView === 'ALERTS' && 'Monitoramento Operacional'}
+               {currentView === 'REPORTS' && 'Relatórios de Aprendizagem'}
+               {currentView === 'AUDIT' && 'Trilha de Auditoria'}
+               {currentView === 'SETTINGS' && 'Minha Conta'}
+               {currentView === 'PLATFORM_CONFIG' && 'Configurações'}
+               </h2>
+               <p className="hidden sm:block text-slate-500 text-sm mt-1">
+               Última atualização: {new Date().toLocaleTimeString()}
+               </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-             <div className="relative">
+          <div className="flex items-center gap-2 sm:gap-4">
+             <div className="relative hidden sm:block">
                 <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
                 <input 
                   type="text" 
@@ -391,6 +423,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                   className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
                 />
              </div>
+             <button className="sm:hidden p-2 text-slate-500 hover:bg-slate-200 rounded-full">
+                <Search size={20} />
+             </button>
              <button className="p-2 relative text-slate-500 hover:bg-slate-200 rounded-full transition-colors">
                 <Bell size={20} />
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-100"></span>
@@ -398,15 +433,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
           </div>
         </header>
 
-        {/* Dynamic Views */}
-        <div className="animate-fade-in">
-          {currentView === 'OVERVIEW' && <AdminDashboard />}
-          {currentView === 'USERS' && <UserManagement />}
-          {currentView === 'ALERTS' && <AlertsScreen />}
-          {currentView === 'REPORTS' && <ReportsScreen />}
-          {currentView === 'AUDIT' && <AuditScreen />}
-          {currentView === 'SETTINGS' && <SettingsScreen />}
-          {currentView === 'PLATFORM_CONFIG' && <PlatformConfigScreen />}
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+          <div className="animate-fade-in max-w-7xl mx-auto pb-20">
+            {currentView === 'OVERVIEW' && <AdminDashboard />}
+            {currentView === 'USERS' && <UserManagement />}
+            {currentView === 'ALERTS' && <AlertsScreen />}
+            {currentView === 'REPORTS' && <ReportsScreen />}
+            {currentView === 'AUDIT' && <AuditScreen />}
+            {currentView === 'SETTINGS' && <SettingsScreen />}
+            {currentView === 'PLATFORM_CONFIG' && <PlatformConfigScreen />}
+          </div>
         </div>
       </main>
     </div>

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EDUC - Espaço Pedagógico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&family=Nunito:wght@400;700&family=Orbitron:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -35,6 +35,7 @@
       /* Custom scrollbar for better UX */
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px; /* Added height for horizontal scrollbars */
       }
       ::-webkit-scrollbar-track {
         background: #f1f1f1; 
@@ -58,6 +59,15 @@
         background-color: #ffffff;
         background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d97706' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       }
+      
+      /* Mobile Optimization Utilities */
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
     </style>
   <script type="importmap">
 {
@@ -74,7 +84,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900 overflow-x-hidden">
+  <body class="bg-gray-50 text-gray-900 overflow-x-hidden select-none">
     <div id="root"></div>
     <!-- Entry Point for React Logic: Must be type="module" -->
     <script type="module" src="./index.tsx"></script>

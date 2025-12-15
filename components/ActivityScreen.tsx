@@ -149,7 +149,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
   // --- VISUAL MAPPING HELPER ---
   const renderVisualIcon = (keyword?: string) => {
     const key = keyword?.toLowerCase().trim() || 'default';
-    const props = { size: 64, strokeWidth: 1.5 };
+    const props = { size: 48, strokeWidth: 1.5 }; // Reduced default size for mobile
     
     // Default subject fallbacks if keyword fails
     const getFallback = () => {
@@ -205,17 +205,19 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
   if (!question) return null;
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-3xl">
-      <div className="flex items-center justify-between mb-6">
-        <Button variant="secondary" onClick={onBack} ageGroup={user.ageGroup}>
-          <ArrowLeft size={20} className="mr-2" /> Voltar
+    <div className="container mx-auto px-4 py-4 sm:py-6 max-w-3xl pb-24">
+      
+      {/* Navigation Header */}
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <Button variant="secondary" onClick={onBack} ageGroup={user.ageGroup} className="!p-2 sm:!px-4">
+          <ArrowLeft size={20} className="sm:mr-2" /> <span className="hidden sm:inline">Voltar</span>
         </Button>
         <div className="flex flex-col items-center">
-             <span className={`font-bold uppercase tracking-wider ${user.ageGroup === '12-14' ? 'text-teen-accent' : 'text-educ-primary'}`}>
+             <span className={`text-sm sm:text-base font-bold uppercase tracking-wider text-center max-w-[150px] truncate ${user.ageGroup === '12-14' ? 'text-teen-accent' : 'text-educ-primary'}`}>
                 {subject}
             </span>
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-                <TrendingUp size={12} /> Nível: {question.difficulty.toUpperCase()}
+            <span className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1">
+                <TrendingUp size={10} /> {question.difficulty.toUpperCase()}
             </span>
         </div>
         <div className="flex gap-2">
@@ -232,7 +234,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
                     }
                 }} 
                 ageGroup={user.ageGroup} 
-                className={`!px-3 !py-2 ${showHint ? 'bg-yellow-100 !border-yellow-400 !text-yellow-700' : ''}`}
+                className={`!p-2 sm:!px-3 sm:!py-2 ${showHint ? 'bg-yellow-100 !border-yellow-400 !text-yellow-700' : ''}`}
                 title="Dica"
             >
                 <Lightbulb size={20} className={showHint ? "fill-yellow-500 text-yellow-600" : ""} />
@@ -242,7 +244,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
                 variant={isSpeaking ? 'primary' : 'secondary'} 
                 onClick={() => toggleAudio(question.text)} 
                 ageGroup={user.ageGroup} 
-                className={`!px-3 !py-2 transition-all ${isSpeaking ? 'animate-pulse ring-2 ring-offset-2 ring-indigo-300' : ''}`}
+                className={`!p-2 sm:!px-3 sm:!py-2 transition-all ${isSpeaking ? 'animate-pulse ring-2 ring-offset-2 ring-indigo-300' : ''}`}
                 title={isSpeaking ? "Parar Áudio" : "Ouvir Pergunta"}
             >
                 {isSpeaking ? <Square fill="currentColor" size={20} /> : <Volume2 size={20} />}
@@ -250,24 +252,24 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
         </div>
       </div>
 
-      <div className={`${getContainerStyle()} p-8 rounded-2xl relative overflow-hidden`}>
+      <div className={`${getContainerStyle()} p-4 sm:p-8 rounded-2xl relative overflow-hidden`}>
         {/* Difficulty Indicator */}
-        <div className={`absolute top-0 left-0 w-2 h-full 
+        <div className={`absolute top-0 left-0 w-1 sm:w-2 h-full 
           ${question.difficulty === 'easy' ? 'bg-green-400' : ''}
           ${question.difficulty === 'medium' ? 'bg-yellow-400' : ''}
           ${question.difficulty === 'hard' ? 'bg-red-500' : ''}
         `} />
 
         {/* --- VISUAL CONTEXT IMAGE/ICON --- */}
-        <div className="flex justify-center mb-6 animate-fade-in">
-             <div className={`p-6 rounded-full shadow-inner border-4 border-slate-50
+        <div className="flex justify-center mb-4 sm:mb-6 animate-fade-in">
+             <div className={`p-4 sm:p-6 rounded-full shadow-inner border-4 border-slate-50
                 ${user.ageGroup === '12-14' ? 'bg-slate-700/50' : 'bg-slate-100'}
              `}>
                  {renderVisualIcon(question.visualKeyword)}
              </div>
         </div>
 
-        <h2 className={`text-2xl font-bold mb-4 leading-relaxed text-center`}>
+        <h2 className={`text-lg sm:text-2xl font-bold mb-4 leading-snug sm:leading-relaxed text-center`}>
           {question.text}
         </h2>
         
@@ -281,13 +283,13 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
             `}>
                 <Lightbulb size={24} className="shrink-0 animate-pulse" />
                 <div className="flex-1">
-                    <p className="text-sm font-bold uppercase mb-1">Dica do Guia:</p>
-                    <p className="italic text-lg">{question.hint}</p>
+                    <p className="text-xs font-bold uppercase mb-1">Dica do Guia:</p>
+                    <p className="italic text-sm sm:text-lg">{question.hint}</p>
                 </div>
             </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 mt-8">
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 mt-6 sm:mt-8">
           {question.options.map((option, index) => {
             let btnVariant: 'primary' | 'secondary' | 'outline' = 'outline';
             let customClass = '';
@@ -313,9 +315,9 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
                 ageGroup={user.ageGroup}
                 onClick={() => handleAnswer(index)}
                 disabled={showExplanation}
-                className={`w-full justify-start text-left h-auto min-h-[60px] whitespace-normal ${customClass}`}
+                className={`w-full justify-start text-left h-auto min-h-[50px] sm:min-h-[60px] whitespace-normal text-sm sm:text-base ${customClass}`}
               >
-                <span className="opacity-60 mr-4 font-mono">{String.fromCharCode(65 + index)}.</span>
+                <span className="opacity-60 mr-3 sm:mr-4 font-mono text-xs sm:text-sm">{String.fromCharCode(65 + index)}.</span>
                 {option}
               </Button>
             );
@@ -323,17 +325,17 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({ user, subject, o
         </div>
 
         {showExplanation && (
-          <div className={`mt-8 p-6 rounded-xl animate-bounce-gentle border-l-4
+          <div className={`mt-6 sm:mt-8 p-4 sm:p-6 rounded-xl animate-bounce-gentle border-l-4
             ${isCorrect ? 'bg-green-50 border-green-500 text-green-900' : 'bg-orange-50 border-orange-500 text-orange-900'}
             ${user.accessibility?.highContrast ? '!bg-gray-900 !text-yellow-400 !border-white' : ''}
           `}>
             <div className="flex items-start gap-4">
-              {isCorrect ? <CheckCircle className="shrink-0" size={32} /> : <XCircle className="shrink-0" size={32} />}
-              <div>
-                <h4 className="font-bold text-lg">{isCorrect ? 'Excelente!' : 'Não desista!'}</h4>
-                <p className="mt-1">{question.explanation}</p>
+              {isCorrect ? <CheckCircle className="shrink-0" size={28} /> : <XCircle className="shrink-0" size={28} />}
+              <div className="flex-1">
+                <h4 className="font-bold text-base sm:text-lg">{isCorrect ? 'Excelente!' : 'Não desista!'}</h4>
+                <p className="mt-1 text-sm sm:text-base">{question.explanation}</p>
                 <div className="mt-4">
-                  <Button onClick={loadNewQuestion} ageGroup={user.ageGroup} icon={<RefreshCcw size={18} />}>
+                  <Button onClick={loadNewQuestion} ageGroup={user.ageGroup} icon={<RefreshCcw size={16} />} className="w-full sm:w-auto justify-center">
                     Próximo Desafio
                   </Button>
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserProfile, Subject } from '../types';
 import { Button } from './ui/Button';
-import { Feather, Calculator, Globe, Lightbulb, Trophy, Star, Map, Compass, ChevronRight, GraduationCap, FileText, Award, ClipboardList, Bell, MessageCircle } from 'lucide-react';
+import { Feather, Calculator, Globe, Lightbulb, Trophy, Star, Map, Compass, ChevronRight, GraduationCap, FileText, Award, ClipboardList, Bell, MessageCircle, Settings } from 'lucide-react';
 
 interface DashboardProps {
   user: UserProfile;
@@ -13,6 +13,7 @@ interface DashboardProps {
   onOpenTasks: () => void;
   onOpenNotifications: () => void;
   onOpenMessages: () => void;
+  onOpenSettings: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ 
@@ -23,7 +24,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onOpenCertificates,
   onOpenTasks,
   onOpenNotifications,
-  onOpenMessages
+  onOpenMessages,
+  onOpenSettings
 }) => {
   
   // Narrative adaptation for Biome Names
@@ -63,6 +65,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     { label: 'Tarefas', icon: <ClipboardList size={20} />, action: onOpenTasks, color: 'bg-blue-100 text-blue-700' },
     { label: 'Notificações', icon: <Bell size={20} />, action: onOpenNotifications, color: 'bg-red-100 text-red-700' },
     { label: 'Mensagens', icon: <MessageCircle size={20} />, action: onOpenMessages, color: 'bg-green-100 text-green-700' },
+    { label: 'Configurações', icon: <Settings size={20} />, action: onOpenSettings, color: 'bg-gray-100 text-gray-700' },
   ];
 
   return (
@@ -107,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* STUDENT NAVIGATION MENU */}
       <div className="mb-8 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-        <div className="flex gap-4 min-w-max sm:min-w-0 sm:grid sm:grid-cols-5">
+        <div className="flex gap-4 min-w-max sm:min-w-0 sm:grid sm:grid-cols-6">
            {menuItems.map((item, idx) => (
               <button
                  key={idx}

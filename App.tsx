@@ -8,6 +8,7 @@ import { DiagnosticAssessment } from './components/DiagnosticAssessment';
 import { Dashboard } from './components/Dashboard';
 import { ActivityScreen } from './components/ActivityScreen';
 import { ProfileScreen } from './components/ProfileScreen';
+import { SettingsScreen } from './components/SettingsScreen';
 import { ParentDashboard } from './components/ParentDashboard';
 import { AdminPortal } from './components/admin/AdminPortal';
 import { AdminLogin } from './components/admin/AdminLogin';
@@ -122,6 +123,12 @@ const AppContent = () => {
     }
   };
 
+  const toggleSound = () => {
+    if (user) {
+        setUser({ ...user, accessibility: { ...user.accessibility, soundEnabled: !user.accessibility.soundEnabled } });
+    }
+  };
+
   // --- PROTECTED ROUTE WRAPPER ---
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!user) {
@@ -203,6 +210,7 @@ const AppContent = () => {
             onOpenTasks={() => navigate('/tasks')}
             onOpenNotifications={() => navigate('/notifications')}
             onOpenMessages={() => navigate('/messages')}
+            onOpenSettings={() => navigate('/settings')}
           />
         </ProtectedRoute>
       } />
@@ -228,6 +236,20 @@ const AppContent = () => {
             user={user!}
             onBack={() => navigate('/dashboard')}
             onUpdate={handleUpdateProfile}
+          />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <SettingsScreen
+            user={user!}
+            onBack={() => navigate('/dashboard')}
+            onToggleSound={toggleSound}
+            onToggleHighContrast={toggleHighContrast}
+            onToggleDyslexiaFont={toggleDyslexiaFont}
+            onOpenParentArea={() => navigate('/parent')}
+            onLogout={handleGoHome}
           />
         </ProtectedRoute>
       } />

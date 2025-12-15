@@ -50,9 +50,40 @@ export const registerUserToAdmin = (user: UserProfile) => {
     targetResource: newUser.name,
     details: `Novo aluno cadastrado via Onboarding: ${newUser.name} (${newUser.ageGroup})`
   });
+};
 
-  // Check for Alert Trigger (Example: User created outside business hours? No, simple welcome alert)
-  // For now, no alert on creation to keep dashboard clean, only issues trigger alerts.
+/**
+ * Deletes a user from the system
+ */
+export const deleteUser = (userId: string) => {
+    const user = _usersStore.find(u => u.id === userId);
+    if (!user) return;
+
+    _usersStore = _usersStore.filter(u => u.id !== userId);
+    
+    // Log Audit
+    logAuditAction({
+        actorId: CURRENT_ADMIN.id,
+        actorName: CURRENT_ADMIN.name,
+        action: 'DELETE_USER',
+        targetResource: user.name,
+        details: `Aluno removido do sistema. ID: ${userId}`
+    });
+};
+
+/**
+ * Send a notification (Mock)
+ */
+export const sendSystemNotification = (userId: string, message: string) => {
+    // In a real app, this would push to a notification service
+    logAuditAction({
+        actorId: CURRENT_ADMIN.id,
+        actorName: CURRENT_ADMIN.name,
+        action: 'SEND_NOTIFICATION',
+        targetResource: userId,
+        details: `Mensagem enviada: "${message}"`
+    });
+    console.log(`[NOTIFICATION] To ${userId}: ${message}`);
 };
 
 /**

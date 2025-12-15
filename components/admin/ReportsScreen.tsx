@@ -1,12 +1,34 @@
 
-import React from 'react';
-import { Download, FileText, PieChart, BarChart2, TrendingUp, Users, Inbox } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, FileText, PieChart, BarChart2, TrendingUp, Users, Inbox, Eye, Printer } from 'lucide-react';
 import { getAllUsers } from '../../services/mockAdminData';
-import { Subject } from '../../types';
+import { Subject, UserProfile } from '../../types';
+import { AssessmentReportView } from '../AssessmentReportView';
 
 export const ReportsScreen = () => {
   const users = getAllUsers();
   const hasData = users.length > 0;
+  const [selectedReportUser, setSelectedReportUser] = useState<UserProfile | null>(null);
+
+  // --- ACTIONS ---
+  const handleExportStats = () => {
+      if (!hasData) return;
+      const headers = ["Aluno", "Idade", "Nivel", "XP", "Materias Exploradas", "Media Geral"];
+      const rows = users.map(u => {
+          const explored = Object.keys(u.learningStats || {}).length;
+          const totalMastery = Object.values(u.learningStats || {}).reduce((acc, curr) => acc + curr.masteryLevel, 0);
+          const avg = explored > 0 ? Math.round(totalMastery / explored) : 0;
+          return [u.name, u.age, u.level, u.xp, explored, avg];
+      });
+
+      const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csvContent));
+      link.setAttribute("download", `educ_stats_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  };
 
   // --- DYNAMIC CALCULATIONS ---
 
@@ -51,6 +73,21 @@ export const ReportsScreen = () => {
       val: data.count > 0 ? Math.round(data.total / data.count) : 0
   }));
 
+  // Filter users who have reports
+  const usersWithReports = users.filter(u => u.assessmentReport);
+
+  // --- RENDER MODAL FOR REPORT ---
+  if (selectedReportUser && selectedReportUser.assessmentReport) {
+      return (
+          <div className="fixed inset-0 z-50 bg-slate-100 overflow-y-auto">
+              <AssessmentReportView 
+                user={selectedReportUser} 
+                report={selectedReportUser.assessmentReport} 
+                onBack={() => setSelectedReportUser(null)}
+              />
+          </div>
+      );
+  }
 
   if (!hasData) {
       return (
@@ -75,7 +112,10 @@ export const ReportsScreen = () => {
              <h2 className="text-xl font-bold text-slate-800">Relatórios Pedagógicos</h2>
              <p className="text-sm text-slate-500">Insights baseados em {users.length} aluno(s) ativos.</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium">
+          <button 
+            onClick={handleExportStats}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium"
+          >
              <Download size={18} /> Exportar CSV
           </button>
        </div>
@@ -128,6 +168,62 @@ export const ReportsScreen = () => {
                  <p className="text-center text-xs text-slate-400 mt-4">Aguardando atividades...</p>
              )}
           </div>
+       </div>
+
+       {/* Reports List Section */}
+       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-6 border-b border-slate-100">
+              <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                  <FileText size={20} className="text-slate-500" /> Relatórios Individuais de Sondagem
+              </h3>
+          </div>
+          <table className="w-full text-left text-sm text-slate-600">
+             <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+                 <tr>
+                     <th className="px-6 py-4">Aluno</th>
+                     <th className="px-6 py-4">Data da Sondagem</th>
+                     <th className="px-6 py-4">Hipótese (Port.)</th>
+                     <th className="px-6 py-4">Nível (Mat.)</th>
+                     <th className="px-6 py-4 text-right">Ações</th>
+                 </tr>
+             </thead>
+             <tbody className="divide-y divide-slate-100">
+                 {usersWithReports.length === 0 ? (
+                     <tr>
+                         <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
+                             Nenhum relatório de sondagem gerado até o momento.
+                         </td>
+                     </tr>
+                 ) : (
+                    usersWithReports.map(u => (
+                        <tr key={u.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="px-6 py-4 font-bold text-slate-700">{u.name}</td>
+                            <td className="px-6 py-4">
+                                {u.assessmentReport ? new Date(u.assessmentReport.generatedAt).toLocaleDateString() : '-'}
+                            </td>
+                            <td className="px-6 py-4">
+                                <span className="px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-bold">
+                                    {u.literacyLevel}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4">
+                                <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">
+                                    {u.numeracyLevel}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                                <button 
+                                    onClick={() => setSelectedReportUser(u)}
+                                    className="px-3 py-1.5 border border-indigo-200 text-indigo-600 hover:bg-indigo-50 rounded-lg text-xs font-bold flex items-center gap-2 ml-auto"
+                                >
+                                    <Eye size={14} /> Visualizar / Baixar
+                                </button>
+                            </td>
+                        </tr>
+                    ))
+                 )}
+             </tbody>
+          </table>
        </div>
     </div>
   );

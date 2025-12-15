@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile, Subject } from '../types';
 import { Button } from './ui/Button';
-import { Feather, Calculator, Globe, Lightbulb, Trophy, Star, Map, Compass, ChevronRight, GraduationCap, FileText, Award, ClipboardList, Bell, MessageCircle, Settings } from 'lucide-react';
+import { Feather, Calculator, Globe, Lightbulb, Trophy, Star, Map, Compass, ChevronRight, GraduationCap, FileText, Award, ClipboardList, Bell, MessageCircle, Settings, X, Sparkles, Zap } from 'lucide-react';
 
 interface DashboardProps {
   user: UserProfile;
@@ -28,6 +28,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onOpenSettings
 }) => {
   
+  const [showLevelUp, setShowLevelUp] = useState(false);
+
+  // Check for Level Up Event
+  useEffect(() => {
+    const storedLevel = sessionStorage.getItem(`user_level_${user.id}`);
+    
+    if (storedLevel) {
+      const prevLevel = parseInt(storedLevel);
+      // If current level is higher than stored, trigger animation
+      if (user.level > prevLevel) {
+        setShowLevelUp(true);
+        // Auto-hide after 5 seconds
+        const timer = setTimeout(() => setShowLevelUp(false), 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+    
+    // Update storage
+    sessionStorage.setItem(`user_level_${user.id}`, user.level.toString());
+  }, [user.level, user.id]);
+
   // Narrative adaptation for Biome Names
   const getBiomeName = (id: Subject) => {
     switch(id) {
@@ -69,7 +90,62 @@ export const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-8 pb-24">
+    <div className="container mx-auto px-4 py-4 sm:py-8 pb-24 relative">
+      
+      {/* LEVEL UP OVERLAY */}
+      {showLevelUp && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowLevelUp(false)}>
+           <div 
+             className={`relative w-full max-w-sm p-8 rounded-3xl shadow-2xl text-center transform transition-all animate-bounce-gentle
+                ${user.ageGroup === '12-14' ? 'bg-slate-900 border-2 border-cyan-400 shadow-cyan-500/50' : 'bg-white'}
+                ${user.ageGroup === '6-8' ? 'border-4 border-yellow-400' : ''}
+             `}
+             onClick={(e) => e.stopPropagation()}
+           >
+              <button onClick={() => setShowLevelUp(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                 <X size={24} />
+              </button>
+
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+                 <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg text-white text-3xl font-bold
+                    ${user.ageGroup === '12-14' ? 'bg-cyan-600 ring-4 ring-cyan-900' : 'bg-yellow-400 ring-4 ring-white'}
+                 `}>
+                    {user.level}
+                 </div>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                 <h2 className={`text-3xl font-extrabold uppercase tracking-wider
+                    ${user.ageGroup === '12-14' ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500' : 'text-amber-500'}
+                 `}>
+                    Level Up!
+                 </h2>
+                 <p className={`font-medium ${user.ageGroup === '12-14' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {user.ageGroup === '6-8' ? 'Parabéns! Você cresceu!' : 'Sistema Atualizado! Novo nível alcançado.'}
+                 </p>
+                 
+                 <div className={`py-3 px-6 rounded-xl flex items-center justify-center gap-3 mx-auto max-w-[200px]
+                    ${user.ageGroup === '12-14' ? 'bg-slate-800' : 'bg-indigo-50'}
+                 `}>
+                    {user.ageGroup === '12-14' ? <Zap className="text-yellow-400" /> : <Sparkles className="text-yellow-500" />}
+                    <span className={`font-bold text-lg ${user.ageGroup === '12-14' ? 'text-white' : 'text-indigo-700'}`}>
+                       +XP Bonus
+                    </span>
+                 </div>
+
+                 <Button onClick={() => setShowLevelUp(false)} ageGroup={user.ageGroup} className="w-full mt-4">
+                    Continuar Jornada
+                 </Button>
+              </div>
+
+              {/* Confetti Decoration (CSS only) */}
+              <div className="absolute -top-4 -left-4 text-yellow-400 animate-spin-slow"><Star size={32} fill="currentColor" /></div>
+              <div className="absolute top-1/2 -right-6 text-purple-400 animate-bounce"><Sparkles size={32} /></div>
+              <div className="absolute -bottom-4 left-10 text-red-400 animate-pulse"><Zap size={32} fill="currentColor" /></div>
+           </div>
+        </div>
+      )}
+
       {/* Header / HUD */}
       <div 
         className={`

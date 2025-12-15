@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile, UserActivityLog, Subject } from '../../types';
-import { getUserActivityLogs, CURRENT_ADMIN } from '../../services/mockAdminData';
+import { getUserActivityLogs, getAllUsers, CURRENT_ADMIN, deleteUser } from '../../services/mockAdminData';
 import { AssessmentReportView } from '../AssessmentReportView';
 import { ArrowLeft, Clock, Award, TrendingUp, AlertCircle, ShieldCheck, Mail, Calendar, Activity, Lock, RefreshCw, Trash2, FileText, Printer, Inbox } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -11,15 +11,49 @@ interface UserDetailProps {
   onBack: () => void;
 }
 
-export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
+export const UserDetail: React.FC<UserDetailProps> = ({ user: initialUser, onBack }) => {
   const [showReport, setShowReport] = useState(false);
-  const activityLogs = getUserActivityLogs(user.id || '');
+  const [currentUser, setCurrentUser] = useState<UserProfile>(initialUser);
+  const [activityLogs, setActivityLogs] = useState<UserActivityLog[]>([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // --- REAL TIME SYNC ---
+  useEffect(() => {
+     // Initial Load
+     setActivityLogs(getUserActivityLogs(initialUser.id || ''));
+
+     // Polling Loop to check for new activities (XP gain, logins, etc)
+     const interval = setInterval(() => {
+         // 1. Refresh User Stats (XP, Level)
+         const allUsers = getAllUsers();
+         const updatedUser = allUsers.find(u => u.id === initialUser.id);
+         if (updatedUser) {
+             setCurrentUser(updatedUser);
+         } else {
+             // User might have been deleted externally
+             onBack(); 
+         }
+
+         // 2. Refresh Logs
+         const freshLogs = getUserActivityLogs(initialUser.id || '');
+         setActivityLogs(freshLogs);
+     }, 2000);
+
+     return () => clearInterval(interval);
+  }, [initialUser.id]);
   
-  if (showReport && user.assessmentReport) {
+  const handleDeleteUser = () => {
+      if (currentUser.id) {
+          deleteUser(currentUser.id);
+          onBack();
+      }
+  };
+
+  if (showReport && currentUser.assessmentReport) {
     return (
         <AssessmentReportView 
-            user={user} 
-            report={user.assessmentReport} 
+            user={currentUser} 
+            report={currentUser.assessmentReport} 
             onBack={() => setShowReport(false)} 
         />
     );
@@ -42,7 +76,37 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
   const yesterdayLogs = activityLogs.filter(l => !isToday(l.timestamp));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in relative">
+      
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full animate-bounce-gentle">
+                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <AlertCircle size={24} />
+                  </div>
+                  <h3 className="text-lg font-bold text-center text-slate-800 mb-2">Confirmar Exclusão</h3>
+                  <p className="text-sm text-center text-slate-500 mb-6">
+                      Tem certeza que deseja apagar o perfil de <strong>{currentUser.name}</strong>? Esta ação é irreversível.
+                  </p>
+                  <div className="flex gap-3">
+                      <button 
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="flex-1 py-2 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50"
+                      >
+                          Cancelar
+                      </button>
+                      <button 
+                        onClick={handleDeleteUser}
+                        className="flex-1 py-2 rounded-lg bg-red-600 text-white font-bold hover:bg-red-700 shadow-md"
+                      >
+                          Excluir
+                      </button>
+                  </div>
+              </div>
+          </div>
+      )}
+
       <button 
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 transition-colors mb-4"
@@ -57,16 +121,16 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
         </div>
         
         <div className="flex flex-col md:flex-row gap-6 relative z-10">
-           <img src={user.avatar} className="w-24 h-24 rounded-full border-4 border-slate-100 shadow-md bg-slate-50" />
+           <img src={currentUser.avatar} className="w-24 h-24 rounded-full border-4 border-slate-100 shadow-md bg-slate-50" />
            
            <div className="flex-1">
               <div className="flex justify-between items-start">
                  <div>
-                    <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">{currentUser.name}</h1>
                     <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-                       <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-green-500" /> ID: {user.id}</span>
-                       <span className="flex items-center gap-1"><Mail size={14} /> {user.parentEmail}</span>
-                       <span className="flex items-center gap-1"><Calendar size={14} /> Desde: {new Date(user.createdAt || '').toLocaleDateString()}</span>
+                       <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-green-500" /> ID: {currentUser.id}</span>
+                       <span className="flex items-center gap-1"><Mail size={14} /> {currentUser.parentEmail}</span>
+                       <span className="flex items-center gap-1"><Calendar size={14} /> Desde: {new Date(currentUser.createdAt || '').toLocaleDateString()}</span>
                     </div>
                  </div>
                  
@@ -75,31 +139,34 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                        <RefreshCw size={14} /> Resetar Senha
                     </button>
                     {CURRENT_ADMIN.role === 'MASTER' && (
-                       <button className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 rounded border border-red-200 flex items-center gap-2">
+                       <button 
+                            onClick={() => setShowDeleteConfirm(true)}
+                            className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 rounded border border-red-200 flex items-center gap-2"
+                        >
                           <Trash2 size={14} /> Excluir Conta
                        </button>
                     )}
                  </div>
               </div>
 
-              {/* Quick Stats Strip */}
+              {/* Quick Stats Strip (REAL TIME VALUES) */}
               <div className="grid grid-cols-4 gap-4 mt-6">
                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-xs text-slate-500 uppercase font-bold">Nível</p>
-                    <p className="text-xl font-bold text-indigo-600">{user.level}</p>
+                    <p className="text-xl font-bold text-indigo-600 animate-[pulse_1s_ease-in-out]">{currentUser.level}</p>
                  </div>
                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-xs text-slate-500 uppercase font-bold">XP Total</p>
-                    <p className="text-xl font-bold text-amber-500">{user.xp}</p>
+                    <p className="text-xl font-bold text-amber-500">{currentUser.xp}</p>
                  </div>
                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-xs text-slate-500 uppercase font-bold">Badges</p>
-                    <p className="text-xl font-bold text-purple-500">{user.badges.length}</p>
+                    <p className="text-xl font-bold text-purple-500">{currentUser.badges.length}</p>
                  </div>
                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-xs text-slate-500 uppercase font-bold">Status</p>
-                    <p className={`text-xl font-bold ${user.status === 'active' ? 'text-green-600' : 'text-red-500'}`}>
-                       {user.status?.toUpperCase()}
+                    <p className={`text-xl font-bold ${currentUser.status === 'active' ? 'text-green-600' : 'text-red-500'}`}>
+                       {currentUser.status?.toUpperCase()}
                     </p>
                  </div>
               </div>
@@ -111,21 +178,21 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
          {/* Left Column: Timeline */}
          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
-               <Clock size={20} className="text-slate-400" /> Linha do Tempo de Atividades
+               <Clock size={20} className="text-slate-400" /> Linha do Tempo (Ao Vivo)
             </h3>
 
-            <div className="space-y-8">
+            <div className="space-y-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                {/* Today Section */}
                <div>
                   <h4 className="text-xs font-bold uppercase text-slate-400 mb-4 border-b border-slate-100 pb-2">Hoje</h4>
                   <div className="space-y-4 pl-2 border-l-2 border-slate-100 ml-1">
                      {todayLogs.length > 0 ? todayLogs.map(log => (
                         <ActivityItem key={log.id} log={log} time={formatDate(log.timestamp)} />
-                     )) : <p className="text-sm text-slate-400 italic pl-4 flex items-center gap-2"><Inbox size={14}/> Nenhuma atividade registrada hoje.</p>}
+                     )) : <p className="text-sm text-slate-400 italic pl-4 flex items-center gap-2"><Inbox size={14}/> Aguardando atividade do aluno...</p>}
                   </div>
                </div>
 
-               {/* Yesterday Section (Will be empty in this session-only demo unless date mocked) */}
+               {/* Yesterday Section */}
                {yesterdayLogs.length > 0 && (
                 <div>
                     <h4 className="text-xs font-bold uppercase text-slate-400 mb-4 border-b border-slate-100 pb-2">Anterior</h4>
@@ -150,7 +217,7 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                <div className="space-y-4">
                   {[Subject.MATH, Subject.PORTUGUESE, Subject.GENERAL_KNOWLEDGE].map(sub => {
                      // Calculate dynamic mastery
-                     const topics = Object.entries(user.learningStats).filter(([k]) => k.startsWith(sub));
+                     const topics = Object.entries(currentUser.learningStats).filter(([k]) => k.startsWith(sub));
                      const avg = topics.length > 0 
                         ? Math.round(topics.reduce((acc, [, v]) => acc + v.masteryLevel, 0) / topics.length)
                         : 0;
@@ -162,7 +229,7 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                             <span className="text-slate-400">{avg}%</span>
                             </div>
                             <div className="w-full h-2 bg-slate-100 rounded-full">
-                            <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${avg}%` }}></div>
+                            <div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{ width: `${avg}%` }}></div>
                             </div>
                         </div>
                      );
@@ -175,10 +242,10 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user, onBack }) => {
                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                   <FileText size={20} className="text-slate-400" /> Relatório de Sondagem
                </h3>
-               {user.assessmentReport ? (
+               {currentUser.assessmentReport ? (
                    <div className="space-y-3">
                        <p className="text-sm text-slate-500">
-                           Gerado em: {new Date(user.assessmentReport.generatedAt).toLocaleDateString()}
+                           Gerado em: {new Date(currentUser.assessmentReport.generatedAt).toLocaleDateString()}
                        </p>
                        <Button onClick={() => setShowReport(true)} className="w-full !text-sm" icon={<Printer size={16} />}>
                            Visualizar Relatório
@@ -212,7 +279,7 @@ const ActivityItem = ({ log, time }: { log: UserActivityLog, time: string }) => 
    };
 
    return (
-      <div className="flex gap-3 items-center relative -left-[19px]">
+      <div className="flex gap-3 items-center relative -left-[19px] animate-fade-in">
          <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 border-white shadow-sm shrink-0 ${getColor()}`}>
             {getIcon()}
          </div>

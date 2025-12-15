@@ -85,19 +85,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <div className="flex items-center gap-4 z-10">
           <div className="relative">
-             <img src={user.avatar} alt="Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 border-4 border-white shadow-sm" />
+             <img src={user.avatar} alt="Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 border-4 border-white shadow-sm object-cover" />
           </div>
-          <div>
-            <h2 className={`text-lg sm:text-xl font-bold leading-tight ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
+          <div className="flex-1 min-w-0">
+            <h2 className={`text-lg sm:text-xl font-bold leading-tight truncate ${user.ageGroup === '12-14' ? 'text-white' : 'text-gray-800'}`}>
               {getWelcomeMessage()}
             </h2>
-            <p className={`text-xs sm:text-sm ${user.ageGroup === '12-14' ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-xs sm:text-sm truncate ${user.ageGroup === '12-14' ? 'text-gray-400' : 'text-gray-500'}`}>
               {getSubMessage()}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center gap-6 z-10">
+        <div className="flex items-center gap-6 z-10 pl-2">
           <div className="flex flex-col items-end">
             <span className="text-[10px] sm:text-xs uppercase font-bold text-gray-400">Energia (XP)</span>
             <div className="flex items-center gap-1 text-yellow-500 font-bold text-lg sm:text-xl">
@@ -108,25 +108,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* STUDENT NAVIGATION MENU (Horizontal Scroll) */}
-      <div className="mb-8 -mx-4 px-4 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-3 sm:gap-4 w-max sm:w-auto sm:grid sm:grid-cols-6 pb-2">
+      {/* STUDENT NAVIGATION MENU (Responsive Grid) */}
+      <div className="mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
            {menuItems.map((item, idx) => (
               <button
                  key={idx}
                  onClick={item.action}
                  className={`
-                    flex flex-col items-center justify-center p-3 rounded-xl gap-2 transition-transform active:scale-95 w-24 sm:w-auto shadow-sm border border-transparent hover:shadow-md
+                    flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl gap-2 transition-all active:scale-95 w-full shadow-sm border border-transparent hover:shadow-md
                     ${user.ageGroup === '12-14' 
-                        ? 'bg-slate-700 text-gray-200 hover:bg-slate-600' 
+                        ? 'bg-slate-700 text-gray-200 hover:bg-slate-600 border-slate-600' 
                         : 'bg-white text-gray-700 hover:border-gray-200'
                     }
                  `}
               >
-                 <div className={`p-2 rounded-full ${user.ageGroup === '12-14' ? 'bg-slate-900' : item.color}`}>
+                 <div className={`p-2.5 sm:p-2 rounded-full ${user.ageGroup === '12-14' ? 'bg-slate-900' : item.color}`}>
                     {item.icon}
                  </div>
-                 <span className="text-[10px] sm:text-xs font-bold text-center leading-tight">{item.label}</span>
+                 <span className="text-xs sm:text-xs font-bold text-center leading-tight">{item.label}</span>
               </button>
            ))}
         </div>
@@ -148,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <Button onClick={(e) => { e.stopPropagation(); onOpenReport(); }} variant="secondary" className="!text-xs !py-2 w-full sm:w-auto justify-center" ageGroup={user.ageGroup}>
                   <FileText size={16} className="mr-2" />
-                  Ver Relatório & Plano
+                  Ver Relatório
               </Button>
           </div>
       )}

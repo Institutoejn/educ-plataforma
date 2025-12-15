@@ -55,6 +55,7 @@ export interface AssessmentReport {
 export interface UserProfile {
   id?: string;
   name: string;
+  password?: string; // New field for authentication
   age: number;
   ageGroup: AgeGroup;
   avatar: string;

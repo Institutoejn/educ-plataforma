@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, AgeGroup } from '../types';
 import { Button } from './ui/Button';
-import { User, ShieldCheck, Gamepad2, Check, ArrowLeft } from 'lucide-react';
+import { User, ShieldCheck, Gamepad2, Check, ArrowLeft, Lock } from 'lucide-react';
 
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
@@ -23,6 +23,7 @@ const AVATARS = [
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, parentData }) => {
   const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [age, setAge] = useState<number | ''>('');
   const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[2]); // Default to Captain
   const [consent, setConsent] = useState(false);
@@ -35,12 +36,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && age && consent) {
+    if (name && age && consent && password) {
       const numAge = Number(age);
       const group = getAgeGroup(numAge);
       
       onComplete({
         name,
+        password, // Save password
         age: numAge,
         ageGroup: group,
         avatar: selectedAvatar,
@@ -80,7 +82,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
           </h1>
           <p className="text-gray-500">
             {parentData 
-              ? `Olá, ${parentData.name}. Agora crie o perfil do seu Super-Herói.` 
+              ? `Olá, ${parentData.name}. Crie o perfil e a senha de acesso do seu filho.` 
               : 'Sua jornada em Omnia começa aqui!'}
           </p>
         </div>
@@ -99,6 +101,22 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
                 placeholder="Nome ou apelido da criança"
               />
             </div>
+          </div>
+
+          <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso (Crie uma senha para o aluno)</label>
+             <div className="relative">
+                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                <input 
+                  type="text" 
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-educ-primary focus:border-educ-primary"
+                  placeholder="Ex: 1234 ou palavra secreta"
+                />
+             </div>
+             <p className="text-xs text-slate-500 mt-1">* O aluno usará esta senha para entrar.</p>
           </div>
 
           <div>

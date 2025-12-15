@@ -15,7 +15,7 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AssessmentReportView } from './components/AssessmentReportView';
 import { CertificatesScreen, TasksScreen, NotificationsScreen, MessagesScreen } from './components/student/StudentFeatures';
 import { UserProfile, Subject, TopicMetrics, LiteracyLevel, NumeracyLevel, AssessmentReport } from './types';
-import { registerUserToAdmin } from './services/mockAdminData';
+import { registerUserToAdmin, authenticateStudent } from './services/mockAdminData';
 
 // --- MAIN CONTENT WRAPPER (Inside Router) ---
 const AppContent = () => {
@@ -41,24 +41,16 @@ const AppContent = () => {
     navigate('/onboarding');
   };
 
-  const handleStudentLogin = () => {
-    // Mock user for "Login" simulation
-    setUser({
-        name: 'Super Aluno',
-        age: 10,
-        ageGroup: '9-11',
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=SuperNova",
-        xp: 1250,
-        level: 12,
-        badges: ['badge1', 'badge2'],
-        consentGiven: true,
-        parentEmail: 'pais@email.com',
-        learningStats: {},
-        literacyLevel: LiteracyLevel.ALPHABETIC,
-        numeracyLevel: NumeracyLevel.LOGICAL_REASONING,
-        accessibility: { highContrast: false, dyslexiaFont: false, soundEnabled: true }
-    });
-    navigate('/dashboard');
+  const handleStudentLogin = (identifier: string, password: string) => {
+    // Authenticate against "Real" database
+    const authUser = authenticateStudent(identifier, password);
+    
+    if (authUser) {
+      setUser(authUser);
+      navigate('/dashboard');
+    } else {
+      alert("Credenciais inválidas! Verifique o Nome de Herói e a Senha criada pelo responsável.");
+    }
   };
 
   // Onboarding & Diagnostic
@@ -71,7 +63,10 @@ const AppContent = () => {
             soundEnabled: true
         }
     };
+    // CRITICAL: Register to Admin "DB" so they can login later
     registerUserToAdmin(profileWithSettings);
+    
+    // Auto-login after creation
     setUser(profileWithSettings);
     navigate('/diagnostic');
   };

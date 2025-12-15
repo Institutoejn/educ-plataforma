@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from './ui/Button';
-import { ArrowLeft, User, Mail, Lock, GraduationCap, Users } from 'lucide-react';
+import { ArrowLeft, User, Mail, Lock, GraduationCap, Users, Key } from 'lucide-react';
 
 interface AuthScreenProps {
   onBack: () => void;
   onParentSuccess: (parentName: string, parentEmail: string) => void;
-  onStudentLogin: () => void; // Simulated for MVP
+  onStudentLogin: (identifier: string, password: string) => void;
 }
 
 type AuthTab = 'PARENT' | 'STUDENT';
@@ -18,12 +18,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
   const [parentEmail, setParentEmail] = useState('');
   const [parentPassword, setParentPassword] = useState('');
 
-  // Student Form State (Simulated ID)
-  const [studentId, setStudentId] = useState('');
+  // Student Form State
+  const [studentName, setStudentName] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
 
   const handleParentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate validation and API call
     if (parentName && parentEmail && parentPassword) {
       onParentSuccess(parentName, parentEmail);
     }
@@ -31,9 +31,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
 
   const handleStudentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (studentId) {
-      // Logic to fetch student would go here
-      onStudentLogin();
+    if (studentName && studentPassword) {
+      onStudentLogin(studentName, studentPassword);
     }
   };
 
@@ -55,8 +54,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
               </h2>
               <p className="text-white/90 text-lg leading-relaxed">
                 {activeTab === 'PARENT' 
-                  ? 'Gerencie o aprendizado, acompanhe relatórios e configure a segurança da conta do seu filho.' 
-                  : 'Pronto para mais uma missão? Digite seu Código de Agente para entrar em Omnia.'}
+                  ? 'Cadastre novos alunos, gerencie o aprendizado e configure a segurança da conta.' 
+                  : 'Pronto para mais uma missão? Digite seu Nome de Herói e sua Senha secreta para entrar.'}
               </p>
            </div>
 
@@ -131,7 +130,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                 </div>
 
                 <div>
-                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
+                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha (Pai)</label>
                    <div className="relative">
                       <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
                       <input 
@@ -159,24 +158,35 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
              <form onSubmit={handleStudentSubmit} className="space-y-6 animate-fade-in py-8">
                 <div className="text-center mb-6">
                    <h3 className="text-2xl font-bold text-slate-800">Bem-vindo de volta!</h3>
-                   <p className="text-slate-500 text-sm">Insira seu código de acesso.</p>
+                   <p className="text-slate-500 text-sm">Use a senha criada pelo seu responsável.</p>
                 </div>
 
                 <div>
-                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Código do Agente / ID</label>
+                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome de Herói (ou ID)</label>
                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <User className="absolute left-3 top-3 text-slate-400" size={18} />
                       <input 
                         type="text" 
-                        value={studentId}
-                        onChange={(e) => setStudentId(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 font-mono tracking-widest uppercase"
-                        placeholder="USR-1234"
+                        value={studentName}
+                        onChange={(e) => setStudentName(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Nome do Aluno"
                       />
                    </div>
-                   <p className="text-xs text-slate-400 mt-2">
-                     * Dica: Peça ao seu responsável se esqueceu o código. (Para teste digite qualquer coisa).
-                   </p>
+                </div>
+
+                <div>
+                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha Secreta</label>
+                   <div className="relative">
+                      <Key className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <input 
+                        type="password" 
+                        value={studentPassword}
+                        onChange={(e) => setStudentPassword(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Sua senha"
+                      />
+                   </div>
                 </div>
 
                 <Button type="submit" variant="secondary" className="w-full justify-center !text-base !bg-green-600 !text-white !border-green-700 hover:!bg-green-500" ageGroup="9-11">

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { UserProfile } from '../../types';
 import { Button } from '../ui/Button';
-import { ArrowLeft, Award, Printer, ClipboardList, CheckCircle, Clock, Bell, Trash2, MessageCircle, Send, User, Download, Calendar, ExternalLink, Cloud, Loader2, Star } from 'lucide-react';
+import { ArrowLeft, Award, Printer, ClipboardList, CheckCircle, Clock, Bell, Trash2, MessageCircle, Send, User, Download, Calendar, ExternalLink, Cloud, Loader2, Star, Plus, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -220,14 +220,47 @@ export const CertificatesScreen: React.FC<FeatureScreenProps> = ({ user, onBack 
 
 // --- 2. TASKS SCREEN ---
 export const TasksScreen: React.FC<FeatureScreenProps> = ({ user, onBack }) => {
-   const tasks = [
+   const [tasks, setTasks] = useState([
       { id: 1, title: 'Leitura: Capítulo 3 do Livro Digital', subject: 'Português', due: 'Hoje', status: 'pending' },
       { id: 2, title: 'Resolver 5 desafios de Fração', subject: 'Matemática', due: 'Amanhã', status: 'pending' },
       { id: 3, title: 'Projeto: Desenhar um mapa do bairro', subject: 'Geografia', due: '12/11', status: 'done' },
-   ];
+   ]);
+
+   const [newTask, setNewTask] = useState('');
+   const [showToast, setShowToast] = useState(false);
+
+   const handleAddTask = () => {
+      if (newTask.trim()) {
+         const task = {
+            id: Date.now(),
+            title: newTask,
+            subject: 'Pessoal',
+            due: 'Sem data',
+            status: 'pending'
+         };
+         setTasks([task, ...tasks]);
+         setNewTask('');
+         
+         // Trigger Toast
+         setShowToast(true);
+         setTimeout(() => setShowToast(false), 3000);
+      }
+   };
 
    return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl min-h-screen">
+      <div className="container mx-auto px-4 py-8 max-w-2xl min-h-screen relative">
+         {/* Toast Notification */}
+         {showToast && (
+            <div className="fixed top-4 right-4 sm:bottom-8 sm:top-auto sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-50 animate-fade-in">
+               <div className="bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+                  <div className="bg-green-500 rounded-full p-1">
+                     <CheckCircle size={16} className="text-white" />
+                  </div>
+                  <span className="font-bold text-sm">Nova tarefa adicionada!</span>
+               </div>
+            </div>
+         )}
+
          <div className="flex items-center justify-between mb-8">
             <Button variant="secondary" onClick={onBack} ageGroup={user.ageGroup}>
                <ArrowLeft size={20} className="mr-2" /> Voltar
@@ -236,6 +269,24 @@ export const TasksScreen: React.FC<FeatureScreenProps> = ({ user, onBack }) => {
                <ClipboardList className="text-blue-600" /> Tarefas da Turma
             </h1>
             <div className="w-10" />
+         </div>
+
+         {/* Add Task Input */}
+         <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Adicionar Lembrete Pessoal</label>
+            <div className="flex gap-2">
+               <input 
+                  type="text" 
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                  placeholder="Ex: Ler 10 páginas do livro..."
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
+               />
+               <Button onClick={handleAddTask} variant="primary" ageGroup={user.ageGroup} className="!px-4">
+                  <Plus size={20} />
+               </Button>
+            </div>
          </div>
 
          <div className="space-y-4">
@@ -254,7 +305,9 @@ export const TasksScreen: React.FC<FeatureScreenProps> = ({ user, onBack }) => {
                            {task.title}
                         </h3>
                         <p className="text-sm text-slate-500 flex items-center gap-2">
-                           <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold uppercase">{task.subject}</span>
+                           <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${task.subject === 'Pessoal' ? 'bg-orange-100 text-orange-700' : 'bg-indigo-50 text-indigo-700'}`}>
+                              {task.subject}
+                           </span>
                            <span className="flex items-center gap-1 text-xs"><Clock size={12}/> Para: {task.due}</span>
                         </p>
                      </div>

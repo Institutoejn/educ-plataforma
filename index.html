@@ -5,47 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EDUC - Espaço Pedagógico</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&family=Nunito:wght@400;700&family=Orbitron:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              'comic': ['Fredoka', 'sans-serif'], // 6-8 anos
-              'adventure': ['Nunito', 'sans-serif'], // 9-11 anos
-              'tech': ['Orbitron', 'sans-serif'], // 12-14 anos
-              'serif': ['"Playfair Display"', 'serif'], // Certificados
-              'sans': ['Nunito', 'sans-serif'],
+              'comic': ['Poppins', 'sans-serif'], 
+              'adventure': ['Poppins', 'sans-serif'], 
+              'tech': ['Poppins', 'sans-serif'], 
+              'serif': ['"Playfair Display"', 'serif'], 
+              'sans': ['Montserrat', 'sans-serif'],
+              'poppins': ['Poppins', 'sans-serif'],
             },
             colors: {
-              'educ-primary': '#4F46E5',
-              'educ-secondary': '#10B981',
-              'kids-primary': '#FFD700',
-              'kids-secondary': '#FF6B6B',
-              'tween-primary': '#3B82F6',
-              'tween-secondary': '#8B5CF6',
-              'teen-primary': '#0F172A',
-              'teen-accent': '#06B6D4',
+              // Brand Colors
+              'brand-red': '#e16048',
+              'brand-yellow': '#ffde2e',
+              'brand-blue': '#1a72ad',
+
+              // Semantic Mapping
+              'educ-primary': '#e16048',    // Red/Orange - Main Actions
+              'educ-secondary': '#1a72ad',  // Blue - Info/Secondary
+              'educ-accent': '#ffde2e',     // Yellow - Highlights
+
+              // Age Groups (Adapted to Brand)
+              'kids-primary': '#ffde2e',    // Yellow background for kids buttons
+              'kids-secondary': '#e16048',  // Red accents
+              
+              'tween-primary': '#1a72ad',   // Blue primary for tweens
+              'tween-secondary': '#e16048', // Red secondary
+              
+              'teen-primary': '#e16048',    // Red primary for teens (Energetic)
+              'teen-accent': '#1a72ad',     // Blue accent
             }
           }
         }
       }
     </script>
     <style>
+      /* Global Typography Rules */
+      body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #ffffff; /* FORCE WHITE BACKGROUND */
+        color: #1f2937; /* Dark Gray Text */
+      }
+      
+      h1, h2, h3, h4, h5, h6, .font-title {
+        font-family: 'Poppins', sans-serif;
+      }
+
       /* Custom scrollbar for better UX */
       ::-webkit-scrollbar {
         width: 8px;
-        height: 8px; /* Added height for horizontal scrollbars */
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: #f1f1f1; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #888; 
+        background: #ccc; 
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #555; 
+        background: #aaa; 
       }
       .animate-bounce-gentle {
         animation: bounce-gentle 2s infinite;
@@ -53,11 +76,6 @@
       @keyframes bounce-gentle {
         0%, 100% { transform: translateY(-5%); }
         50% { transform: translateY(0); }
-      }
-      /* Certificate decorative border pattern */
-      .certificate-border {
-        background-color: #ffffff;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d97706' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       }
       
       /* Mobile Optimization Utilities */
@@ -84,7 +102,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900 overflow-x-hidden select-none">
+  <body class="bg-white text-gray-900 overflow-x-hidden select-none">
     <div id="root"></div>
     <!-- Entry Point for React Logic: Must be type="module" -->
     <script type="module" src="./index.tsx"></script>

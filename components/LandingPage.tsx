@@ -10,7 +10,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminClick, onLogoClick }) => {
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-white font-sans">
       {/* Navbar */}
       <nav className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="container mx-auto px-6 h-20 flex justify-between items-center">
@@ -19,23 +19,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             title="Recarregar Home"
           >
-            <div className="w-10 h-10 bg-educ-primary rounded-xl flex items-center justify-center text-white shadow-lg">
+            <div className="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-lg">
               <Gamepad2 size={24} />
             </div>
             <span className="text-2xl font-bold text-slate-800 tracking-tight">EDUC</span>
           </div>
           
           <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-            <a href="#metodologia" className="hover:text-educ-primary transition-colors">Metodologia</a>
+            <a href="#metodologia" className="hover:text-brand-red transition-colors">Metodologia</a>
             <a 
               href="http://basenacionalcomum.mec.gov.br/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:text-educ-primary transition-colors flex items-center gap-1"
+              className="hover:text-brand-red transition-colors flex items-center gap-1"
             >
               BNCC
             </a>
-            <a href="#pais" className="hover:text-educ-primary transition-colors">Para Pais</a>
+            <a href="#pais" className="hover:text-brand-red transition-colors">Para Pais</a>
           </div>
 
           <Button onClick={onLoginClick} className="!py-2 !px-6 !text-sm !rounded-lg shadow-md hover:shadow-lg transition-all" ageGroup="9-11">
@@ -48,11 +48,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
       <header className="relative overflow-hidden bg-white pt-20 pb-32">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-6">
-            <span className="inline-block py-1 px-3 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-wider border border-indigo-100">
+            <span className="inline-block py-1 px-3 rounded-full bg-brand-yellow/20 text-amber-700 text-xs font-bold uppercase tracking-wider border border-brand-yellow/30">
               Nova Era da Educação
             </span>
             <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight">
-              Aprender nunca foi tão <span className="text-transparent bg-clip-text bg-gradient-to-r from-educ-primary to-purple-600">épico.</span>
+              Aprender nunca foi tão <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-brand-blue">épico.</span>
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed max-w-lg">
               A plataforma 100% gamificada que transforma a BNCC em missões incríveis para crianças e adolescentes de 6 a 14 anos.
@@ -71,17 +71,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
           
           {/* Hero Image / Illustration */}
           <div className="relative">
-             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-white rounded-full blur-3xl opacity-60"></div>
+             <div className="absolute inset-0 bg-gradient-to-tr from-brand-yellow/20 to-brand-red/10 rounded-full blur-3xl opacity-60"></div>
+             {/* Updated Image: Reliable URL */}
              <img 
-               src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=2070" 
-               alt="Criança aprendendo no tablet" 
-               className="relative z-10 rounded-3xl shadow-2xl border-4 border-white transform rotate-2 hover:rotate-0 transition-transform duration-500"
+               src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000&auto=format&fit=crop" 
+               alt="Criança aprendendo com tecnologia de forma divertida" 
+               className="relative z-10 rounded-3xl shadow-2xl border-4 border-white transform rotate-2 hover:rotate-0 transition-transform duration-500 object-cover aspect-[4/3]"
              />
              
              {/* Floating Cards */}
              <div className="absolute -bottom-10 -left-10 bg-white p-4 rounded-xl shadow-lg border border-slate-100 animate-bounce-gentle z-20">
                 <div className="flex items-center gap-3">
-                   <div className="bg-yellow-100 p-2 rounded-full text-yellow-600"><TrendingUp size={20} /></div>
+                   <div className="bg-brand-yellow p-2 rounded-full text-amber-900"><TrendingUp size={20} /></div>
                    <div>
                       <p className="text-xs text-slate-400 font-bold uppercase">Progresso</p>
                       <p className="font-bold text-slate-800">+150 XP hoje</p>
@@ -90,14 +91,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
              </div>
           </div>
         </div>
-        
-        {/* Background Decoration */}
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-educ-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
       </header>
 
       {/* Features Section - ID Metodologia */}
-      <section id="metodologia" className="py-24 bg-slate-50">
+      <section id="metodologia" className="py-24 bg-white border-t border-slate-50">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-bold text-slate-800 mb-4">Por que escolher a EDUC?</h2>
@@ -107,21 +104,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
                icon={<BookOpen className="text-white" size={24} />}
-               color="bg-blue-500"
+               color="bg-brand-blue"
                title="Alinhado à BNCC"
                desc="Conteúdo curricular de Português, Matemática e Ciências transformado em trilhas de aventura."
             />
             <FeatureCard 
                icon={<Gamepad2 className="text-white" size={24} />}
-               color="bg-purple-500"
+               color="bg-brand-red"
                title="Gamificação Real"
                desc="Nada de testes chatos. Aqui o aluno ganha XP, sobe de nível e desbloqueia conquistas."
             />
             <FeatureCard 
                icon={<ShieldCheck className="text-white" size={24} />}
-               color="bg-green-500"
+               color="bg-brand-yellow"
                title="Segurança Total"
                desc="Ambiente fechado, sem chat aberto, sem anúncios e com total controle dos pais."
+               textColor="text-amber-900"
             />
           </div>
         </div>
@@ -131,7 +129,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
       <section id="pais" className="py-24 bg-white border-t border-slate-100">
          <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1 relative">
-               <div className="absolute inset-0 bg-blue-50 rounded-full blur-2xl"></div>
+               <div className="absolute inset-0 bg-brand-blue/10 rounded-full blur-2xl"></div>
                <div className="relative bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
                   <div className="flex items-center gap-4 mb-6 border-b border-slate-50 pb-4">
                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
@@ -152,7 +150,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
                </div>
             </div>
             <div className="order-1 md:order-2">
-               <span className="text-educ-primary font-bold tracking-wider uppercase text-sm">Controle Parental</span>
+               <span className="text-brand-red font-bold tracking-wider uppercase text-sm">Controle Parental</span>
                <h2 className="text-3xl font-bold text-slate-800 mt-2 mb-6">Acompanhe cada passo da jornada.</h2>
                <p className="text-slate-600 mb-6">
                   Nosso painel para pais oferece relatórios detalhados sobre as fortalezas e dificuldades do seu filho.
@@ -180,7 +178,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-1 md:col-span-2">
               <div onClick={onLogoClick} className="flex items-center gap-2 text-white mb-4 cursor-pointer hover:opacity-80">
-                <Gamepad2 size={24} />
+                <div className="w-8 h-8 bg-brand-red rounded flex items-center justify-center">
+                    <Gamepad2 size={18} />
+                </div>
                 <span className="text-xl font-bold">EDUC</span>
               </div>
               <p className="max-w-xs text-sm">
@@ -224,9 +224,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onAdminC
   );
 };
 
-const FeatureCard = ({ icon, color, title, desc }: any) => (
+const FeatureCard = ({ icon, color, title, desc, textColor }: any) => (
   <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
-    <div className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center mb-6 shadow-md`}>
+    <div className={`w-12 h-12 ${color} ${textColor || 'text-white'} rounded-xl flex items-center justify-center mb-6 shadow-md`}>
       {icon}
     </div>
     <h3 className="text-xl font-bold text-slate-800 mb-3">{title}</h3>

@@ -37,12 +37,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
   };
 
   return (
-    <div className="min-h-screen bg-indigo-50 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col md:flex-row">
         
         {/* Left Side: Illustration / Brand */}
         <div className={`hidden md:flex md:w-1/2 p-12 text-white flex-col justify-between transition-colors duration-500
-            ${activeTab === 'PARENT' ? 'bg-indigo-600' : 'bg-educ-secondary'}
+            ${activeTab === 'PARENT' ? 'bg-brand-red' : 'bg-brand-blue'}
         `}>
            <button onClick={onBack} className="flex items-center gap-2 text-white/80 hover:text-white self-start">
               <ArrowLeft size={20} /> Voltar
@@ -77,7 +77,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
             <button 
               onClick={() => setActiveTab('PARENT')}
               className={`flex-1 py-3 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all
-                ${activeTab === 'PARENT' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}
+                ${activeTab === 'PARENT' ? 'bg-white shadow-sm text-brand-red' : 'text-slate-500 hover:text-slate-700'}
               `}
             >
               <Users size={18} /> Responsável
@@ -85,7 +85,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
             <button 
               onClick={() => setActiveTab('STUDENT')}
               className={`flex-1 py-3 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all
-                ${activeTab === 'STUDENT' ? 'bg-white shadow-sm text-green-600' : 'text-slate-500 hover:text-slate-700'}
+                ${activeTab === 'STUDENT' ? 'bg-white shadow-sm text-brand-blue' : 'text-slate-500 hover:text-slate-700'}
               `}
             >
               <GraduationCap size={18} /> Aluno
@@ -108,7 +108,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                         required
                         value={parentName}
                         onChange={(e) => setParentName(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                         placeholder="Seu nome completo"
                       />
                    </div>
@@ -123,7 +123,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                         required
                         value={parentEmail}
                         onChange={(e) => setParentEmail(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                         placeholder="exemplo@email.com"
                       />
                    </div>
@@ -138,14 +138,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                         required
                         value={parentPassword}
                         onChange={(e) => setParentPassword(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                         placeholder="••••••••"
                       />
                    </div>
                 </div>
 
                 <div className="pt-4">
-                  <Button type="submit" className="w-full justify-center !text-base" ageGroup="9-11">
+                  <Button type="submit" className="w-full justify-center !text-base !bg-brand-red hover:!bg-red-600" ageGroup="9-11">
                     Continuar para Cadastro do Aluno
                   </Button>
                 </div>
@@ -169,7 +169,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                         type="text" 
                         value={studentName}
                         onChange={(e) => setStudentName(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue"
                         placeholder="Nome do Aluno"
                       />
                    </div>
@@ -183,13 +183,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onParentSuccess,
                         type="password" 
                         value={studentPassword}
                         onChange={(e) => setStudentPassword(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue"
                         placeholder="Sua senha"
                       />
                    </div>
                 </div>
 
-                <Button type="submit" variant="secondary" className="w-full justify-center !text-base !bg-green-600 !text-white !border-green-700 hover:!bg-green-500" ageGroup="9-11">
+                <Button type="submit" variant="secondary" className="w-full justify-center !text-base !bg-brand-blue !text-white !border-brand-blue hover:!bg-sky-700" ageGroup="9-11">
                   Acessar Plataforma
                 </Button>
              </form>

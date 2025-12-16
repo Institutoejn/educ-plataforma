@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { UserProfile, UserActivityLog, Subject } from '../../types';
+import { UserProfile, UserActivityLog, Subject, TopicMetrics } from '../../types';
 import { getUserActivityLogs, getAllUsers, CURRENT_ADMIN, deleteUser } from '../../services/mockAdminData';
 import { AssessmentReportView } from '../AssessmentReportView';
 import { ArrowLeft, Clock, Award, TrendingUp, AlertCircle, ShieldCheck, Mail, Calendar, Activity, Lock, RefreshCw, Trash2, FileText, Printer, Inbox } from 'lucide-react';
@@ -219,7 +218,7 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user: initialUser, onBac
                      // Calculate dynamic mastery
                      const topics = Object.entries(currentUser.learningStats).filter(([k]) => k.startsWith(sub));
                      const avg = topics.length > 0 
-                        ? Math.round(topics.reduce((acc, [, v]) => acc + v.masteryLevel, 0) / topics.length)
+                        ? Math.round(topics.reduce((acc, [, v]) => acc + (v as TopicMetrics).masteryLevel, 0) / topics.length)
                         : 0;
 
                      return (
@@ -263,7 +262,7 @@ export const UserDetail: React.FC<UserDetailProps> = ({ user: initialUser, onBac
   );
 };
 
-const ActivityItem = ({ log, time }: { log: UserActivityLog, time: string }) => {
+const ActivityItem: React.FC<{ log: UserActivityLog, time: string }> = ({ log, time }) => {
    const getIcon = () => {
       if (log.activityType === 'LOGIN') return <Lock size={14} />;
       if (log.activityType === 'LEVEL_UP') return <TrendingUp size={14} />;

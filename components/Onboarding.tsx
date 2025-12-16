@@ -9,23 +9,32 @@ interface OnboardingProps {
   parentData?: { name: string; email: string }; 
 }
 
-// Collections updated to "Adventurer" style to represent Superheroes
+// Curated list for Diversity & Inclusion (Avataaars Style)
+// Configured for neutral/pleasant expressions (mouth=smile) and diverse traits.
 const AVATARS = [
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Captain",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Zack",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Bella",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=SuperNova",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Easton",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Liliana"
+  // 1. Menino, Pele Clara, Cabelo Curto
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&mouth=smile&eyebrows=default&skinColor=f8d25c&top=shortFlat",
+  // 2. Menina, Pele Clara, Cabelo Longo
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Lottie&mouth=smile&eyebrows=default&skinColor=ffdbb4&top=longHairStraight",
+  // 3. Menino, Pele Negra, Cabelo Curto
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Caleb&mouth=smile&eyebrows=default&skinColor=ae5d29&top=shortCurly",
+  // 4. Menina, Pele Negra, Cabelo Afro/Volumoso
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Amara&mouth=smile&eyebrows=default&skinColor=614335&top=bigHair",
+  // 5. Menino, Traços Asiáticos/Indígenas
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Hiro&mouth=smile&eyebrows=default&skinColor=edb98a&top=shortWaved",
+  // 6. Menina, Inclusão (Hijab/Lenço)
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima&mouth=smile&eyebrows=default&top=hijab&accessoriesProbability=0&skinColor=d08b5b",
+  // 7. Menino, Óculos, Pele Morena
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Noah&mouth=smile&eyebrows=default&accessories=glasses&skinColor=d08b5b&top=shortDreads",
+  // 8. Menina, Cabelo Colorido/Moderno
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Jade&mouth=smile&eyebrows=default&top=bob&hairColor=f59797&skinColor=ffdbb4"
 ];
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, parentData }) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState<number | ''>('');
-  const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[2]); // Default to Captain
+  const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[0]); 
   const [consent, setConsent] = useState(false);
 
   const getAgeGroup = (age: number): AgeGroup => {
@@ -120,7 +129,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Escolha seu Super-Herói</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Escolha seu Avatar</label>
             <div className="grid grid-cols-4 gap-3 sm:gap-4">
               {AVATARS.map((url, index) => (
                 <button
@@ -135,7 +144,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
                   <img 
                     src={url} 
                     alt={`Hero option ${index + 1}`} 
-                    className="w-full h-full rounded-full bg-indigo-50"
+                    className="w-full h-full rounded-full bg-slate-50"
                   />
                   {selectedAvatar === url && (
                     <div className="absolute -bottom-1 -right-1 bg-educ-primary text-white rounded-full p-1 border-2 border-white">
@@ -145,6 +154,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack, pare
                 </button>
               ))}
             </div>
+            <p className="text-xs text-center text-slate-400 mt-2">Você poderá alterar ou enviar uma foto depois.</p>
           </div>
 
           <div>

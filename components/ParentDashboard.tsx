@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserProfile, Subject } from '../types';
+import { UserProfile, Subject, TopicMetrics } from '../types';
 import { Button } from './ui/Button';
 import { ArrowLeft, Lock, BarChart2, AlertCircle, CheckCircle, PieChart } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({ user, onBack }
   const getStatsBySubject = (subj: Subject) => {
     const stats = Object.entries(user.learningStats)
       .filter(([key]) => key.startsWith(subj))
-      .map(([_, val]) => val);
+      .map(([_, val]) => val as TopicMetrics);
     
     if (stats.length === 0) return { mastery: 0, attempts: 0 };
     

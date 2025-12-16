@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
@@ -157,7 +156,7 @@ const AppContent = () => {
   };
 
   // --- PROTECTED ROUTE WRAPPER ---
-  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!user) {
       return <Navigate to="/" replace />;
     }
